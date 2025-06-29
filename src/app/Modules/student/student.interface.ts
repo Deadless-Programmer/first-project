@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Date, Model, Types } from 'mongoose';
 
 export type TGuardian = {
   fatherName: string;
@@ -23,10 +23,11 @@ export type TLocalGuardian = {
 
 export type TStudent = {
   id: string;
-  password:string;
+  user: Types.ObjectId;
+
   name: TUserName;
   gender: 'male' | 'Female' | 'Other';
-  dateOfBirth?: string;
+  dateOfBirth?: Date;
 
   email: string;
   contactNo: string;
@@ -37,20 +38,15 @@ export type TStudent = {
   guardian: TGuardian;
   localGuardian: TLocalGuardian;
   profileImage?: string;
-  isActive: 'active' | 'blocked';
-  isDeleted:boolean
+  admissionSemester: Types.ObjectId;
+  academicDepartment: Types.ObjectId;
+  isDeleted: boolean;
 };
 
-
-
 // for static methdo
-export interface StudentModel extends Model<TStudent>{
-  isUserExists(id:string):Promise<TStudent | null>
+export interface StudentModel extends Model<TStudent> {
+  isUserExists(id: string): Promise<TStudent | null>;
 }
-
-
-
-
 
 // for static instance
 // export type StudentMethods = {

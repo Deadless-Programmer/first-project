@@ -1,20 +1,32 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { StudentRoutes } from './app/Modules/student/student.route';
+
+import globalErrorHandlers from './app/middlewares/globalErrorHandlers';
+import notFound from './app/middlewares/notFound';
+import router from './app/routes';
+
+
+
 const app: Application = express();
 app.use(express.json());
 app.use(cors());
 
 app.use(bodyParser.json());
 
-app.use('/api/v1/students', StudentRoutes);
+app.use('/api/v1', router);
+// app.use('/api/v1/users', UserRoutes);
 
-app.get('/', (req: Request, res: Response) => {
-  const a = 10;
+const test = async(req: Request, res: Response) => {
+  const a= 10;
+  res.send(a)
+  //  Promise.reject();
+}
 
-  res.send(a);
-});
+app.get('/', test);
+
+app.use(globalErrorHandlers);
+app.use(notFound)
 
 // app.post('/gotdata', (req:Request, res:Response)=>{
 //   res.send('got data')
