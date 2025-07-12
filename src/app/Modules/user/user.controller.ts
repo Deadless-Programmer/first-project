@@ -9,7 +9,7 @@ const createStudent: RequestHandler = catchAsync(
  
     const { password, student: studentData } = req.body;
 //  console.log(password)
-    const result = await UserService.createStudentIntoDB(password, studentData);
+    const result = await UserService.createStudentIntoDB(req.file, password, studentData);
 
     sendResponse(res, {
       statusCode: status.OK,
@@ -52,12 +52,36 @@ const createAdmin = catchAsync(async (req, res) => {
   });
 });
 
+const getMe = catchAsync(async (req, res) => {
+  const { userId, role } = req.user;
+  const result = await UserService.getMe(userId, role);
 
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'User is retrieved successfully',
+    data: result,
+  });
+});
+
+
+const changeStatus = catchAsync(async (req, res) => {
+  const id = req.params.id;
+
+  const result = await UserService.changeStatus(id, req.body);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: 'Status is updated successfully',
+    data: result,
+  });
+});
 
 
 
 
 
 export const UserControllers = {
-  createStudent,createFaculty, createAdmin
+  createStudent,createFaculty, createAdmin, getMe, changeStatus
 };

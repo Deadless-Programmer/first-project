@@ -16,8 +16,9 @@ import { Faculty } from '../Faculty/faculty.model';
 import { TFaculty } from '../Faculty/faculty.interface';
 import { TAdmin } from '../admin/admin.interface';
 import { Admin } from '../admin/admin.model';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
-const createStudentIntoDB = async (password: string, payload: TStudent) => {
+const createStudentIntoDB = async (  file: any, password: string, payload: TStudent) => {
   const userData: Partial<TUser> = {};
   userData.password = password || (config.default_password as string);
   userData.role = 'student';
@@ -36,6 +37,18 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   try {
     session.startTransaction();
     userData.id = await generateStudentId(admissionSemester);
+
+
+
+if (file) {
+      const imageName = `${userData.id}${payload?.name?.firstName}`;
+      const path = file?.path;
+
+      //send image to cloudinary
+      const { secure_url } = await sendImageToCloudinary(imageName, path);
+      payload.profileImage = secure_url as string;
+    }
+
 
     const newUser = await User.create([userData], { session }); // build in static method
 
@@ -192,9 +205,31 @@ const createAdminIntoDB = async (
   }
 };
 
+const getMe = async (userId: string, role: string) => {
+  let result = null;
+  if (role === 'student') {
+    result = await Student.findOne({ id: userId }).populate('user');
+  }
+  if (role === 'admin') {
+    result = await Admin.findOne({ id: userId }).populate('user');
+  }
+
+  if (role === 'faculty') {
+    result = await Faculty.findOne({ id: userId }).populate('user');
+  }
+
+  return result;
+};
+
+const changeStatus = async (id: string, payload: { status: string }) => {
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+  });
+  return result;
+};
 
 
 
 export const UserService = {
-  createStudentIntoDB,createFacultyIntoDB,createAdminIntoDB
+  createStudentIntoDB,createFacultyIntoDB,createAdminIntoDB, getMe,changeStatus
 };

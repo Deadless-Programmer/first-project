@@ -117,8 +117,9 @@ const localGuardianValidationSchema = z.object({
     presentAddress: z.string(),
     permanentAddress: z.string(),
     guardian: guardianValidationSchema,
-    profileImage : z.string(),
+    // profileImage : z.string(),
     admissionSemester:z.string(),
+     academicDepartment: z.string(),
     localGuardian: localGuardianValidationSchema,
    })
   
@@ -140,9 +141,10 @@ const localGuardianValidationSchema = z.object({
       presentAddress: z.string().optional(),
       permanentAddress: z.string().optional(),
       guardian: guardianValidationSchema.partial().optional(),
-      profileImage: z.string().optional(),
+      // profileImage: z.string().optional(),
       admissionSemester: z.string().optional(),
       localGuardian: localGuardianValidationSchema.partial().optional(),
+      academicDepartment: z.string().optional(),
     }).partial()
   })
 });
