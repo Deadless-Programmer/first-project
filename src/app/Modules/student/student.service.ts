@@ -8,88 +8,26 @@ import QueryBuilder from '../../builder/QuearyBuilder';
 import { studentSearchableFields } from './student.constant';
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
-  //   const queryObj ={...query}
-  //   const studentSearchableFields = ['email', 'name.firstName', 'presentAddress']
-  //    let searchTerm ='';
-
-  //    if(query?.searchTerm){
-  //     searchTerm = query?.searchTerm as string
-  //    }
-
-  //    const searchQueary = Student.find({
-  //     $or:studentSearchableFields.map((field)=>({
-  //         [field]:{$regex: searchTerm, $options:'i'}
-  //     }))
-  //   })
-
-  //   // filtering
-
-  //   const excludeFields=['searchTerm','sort','limit','page', 'fields']
-
-  //   excludeFields.forEach(el=> delete queryObj[el])
-
-  //   const FilterQuery =  searchQueary.find(queryObj)
-  //     .populate('admissionSemester')
-  //     .populate({
-  //       path: 'academicDepartment',
-  //       populate: {
-  //         path: 'academicFaculty',
-  //       },
-  //     });
-
-  //   let sort ="-createdAt";
-
-  //   if(query.sort){
-  //     sort=query.sort as string
-  //   }
-
-  //   const sortQuery =  FilterQuery.sort(sort);
-
-  //   let limit= 1
-  //   let page=1
-  //   let skip =0;
-
-  // if(query.limit){
-  //     limit=query.limit as number;
-  //   }
-
-  //   if(query.page){
-  //     page =Number(query.page)
-  //     skip =(page-1)*limit
-  //   }
-
-  //   const paiginateQuery= sortQuery.skip(skip);
-
-  //   const limitQuery = paiginateQuery.limit(limit)
-
-  //   // fields limiting
-  //  let fields="-__v";
-  //  if(query.fields){
-  //   fields=(query.fields as string).split(",").join(' ')
-  //  }
-  // const fieldsQueary = await limitQuery.select(fields)
-
-  // return fieldsQueary;
-
   const studentQuery = new QueryBuilder(
-    Student?.find().populate('user')
+    Student.find()
+      .populate('user')
       .populate('admissionSemester')
-      .populate({
-        path: 'academicDepartment',
-        populate: {
-          path: 'academicFaculty',
-        },
-      }),
+      .populate('academicDepartment academicFaculty'),
     query,
   )
-    ?.search(studentSearchableFields)
-    ?.filter()
+    .search(studentSearchableFields)
+    .filter()
     .sort()
-    ?.paginate()
-    ?.fields();
+    .paginate()
+    .fields();
 
+  const meta = await studentQuery.countTotal();
   const result = await studentQuery.modelQuery;
-  return result;
+
+  return {
+    meta,
+    result,
+  };
 };
 const getSingleStudentsFromDB = async (id: string) => {
   // const result = await Student.findOne({ id });
