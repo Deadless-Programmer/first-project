@@ -32,6 +32,18 @@ const createStudentIntoDB = async (  file: any, password: string, payload: TStud
     throw new AppError(status.NOT_FOUND, 'This Department does not exist');
   }
 
+
+   const academicDepartment = await AcademicDepartment.findById(
+    payload.academicDepartment,
+  );
+
+  if (!academicDepartment) {
+    throw new AppError(400, 'Aademic department not found');
+  }
+  payload.academicFaculty = academicDepartment.academicFaculty;
+
+
+
   const session = await mongoose.startSession();
 
   try {
